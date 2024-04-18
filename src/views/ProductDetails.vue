@@ -38,131 +38,97 @@
         </div>
         <!-- Section Produit -->
         <div class="product-section">
-            <!-- Image du produit -->
-            <div class="product-image">
-                <img :src="img" />
-            </div>
-
-            <!-- Description du produit -->
-            <div class="product-description">
-                <h1>
-                    <!-- {{ $route.params.name }} -->
-                    {{ title }}
-                    <img class="img-best-seller" src="../assets/images/gold-label-best-seller.jpg" />
-                </h1>
-                <p v-show="notAvailable">Momentanément indisponible</p>
-
-                <p v-if="sale">
-                    <span class="sale">{{ price }} € </span>
-                    <span class="new-price"> {{ price - 5 }} € PROMOTION</span>
-                </p>
-                <p v-else>
-                    <span class="price">{{ price }} €</span>
-                </p>
-
-                <br />
-                <strong>Ingrédients </strong>
-                <div>
-                    <span v-for="(ingredient, index) in ingredients" :key="index">{{ ingredient + ", " }}
-                    </span>
-                </div>
-                <br />
-                <div class="sauces">
-                    <strong>Sauces au choix</strong>
-                    <ul>
-                        <li v-for="(sauce, index) in sauces" :key="index" @mouseover="updateImage(sauce.image)"
-                            :style="{ backgroundColor: sauce.color }">
-                            {{ sauce.type }}
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <strong>Valeurs nutritionnelles pour 100 grammes</strong>
-                    <ul>
-                        <li v-for="(value, name, index) in energy" :key="index">
-                            {{ name }} : {{ value }}
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Bouton d'ajout au panier -->
-                <button v-bind:class="{ notActiveBtn: notAvailable }" @click="addProduct()" :disabled="notAvailable">
-                    Ajouter à ma commande
-                </button>
-                <br /><br />
-            </div>
+            <ProductInfo :bestseller="bestsellerProduct" @add-product="addCart($event)" />
         </div>
     </div>
 </template>
 
 <script>
+import ProductInfo from "../components/ProductInfo.vue"
 export default {
     data() {
         return {
-            product: "Pizza",
-            price: 12,
-            img: require("../assets/images/EIM.jpg"),
-            sale: false,
-            notAvailable: false,
-            sauces: [
-                {
-                    id: 1001,
-                    type: "Sauce Tomate",
-                    color: "#db4006",
-                    image: require("../assets/images/oscar.png")
-                },
-                {
-                    id: 1002,
-                    type: "Crème Fraiche",
-                    color: "#e9cb8f",
-                    image: require("../assets/images/1.png")
-                }
-            ],
-            ingredients: [
-                "Olives",
-                "Poulet roti",
-                "Bacon",
-                "Poivrons",
-                "Champignons",
-                "Mozzarella",
-                "Oeuf"
-            ],
-            energy: {
-                Kcal: 242,
-                Glucides: 27.99,
-                Fibres: 1.75,
-                Proteines: 9.62,
-                Sel: 11
-            },
             totalPrice: 0,
             nbrProduct: 0,
-            promo: ""
+            promo: "",
+            bestsellerProduct: true,
         };
     },
 
-    props: ['name'],
-
-    methods: {
-        addProduct() {
-            if (this.sale) {
-                this.nbrProduct += 1;
-                this.totalPrice += this.price - 5;
-            } else {
-                this.nbrProduct += 1;
-                this.totalPrice += this.price;
-            }
-        },
-        updateImage(newLinkImage) {
-            this.img = newLinkImage;
-        }
+    components: {
+        ProductInfo
     },
 
-    computed: {
-        title() {
-            return this.product + " " + this.name;
+    methods: {
+        addCart(price) {
+            this.nbrProduct += 1;
+            this.totalPrice = price * this.nbrProduct;
         }
-    }
+    },
 };
 </script>
 
-<style scoped></style>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
+
+#section-product-details {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.cart {
+    margin: 40px 40px auto auto;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table,
+th,
+td {
+    border: 1px solid black;
+    text-align: right;
+    padding: 0 10px;
+    text-wrap: nowrap;
+}
+
+table thead th {
+    text-align: center;
+}
+
+td {
+    width: 170px;
+}
+
+td.code-promo {
+    padding: 0;
+}
+
+.product-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+/* Transition */
+.bounce-enter-active {
+    animation: bounce-in 0.5s;
+}
+
+@keyframes bounce-in {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+</style>
